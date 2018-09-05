@@ -13,7 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.test.context.SpringBootTest;
-
+import org.springframework.cloud.stream.app.lcbo.pricelist.loader.domain.LcboProduct;
 import org.springframework.cloud.stream.messaging.Processor;
 import org.springframework.cloud.stream.test.binder.MessageCollector;
 import org.springframework.messaging.support.GenericMessage;
@@ -42,32 +42,40 @@ public abstract class LcboDataMapperProcessorIntegrationTests {
 	@Autowired
 	protected MessageCollector collector;
 	
-	private static final String RESULT_SUBSTRING = "{\"name\":null,\"div_code\":null,\"dept_code\":null,\"class_code\":\"AWA\",\"size\":0,\"csc\":0,\"price\":0.0,\"lcboPrice\":0.0,\"status\":null,\"tags\":null,\"_timestamp\":\"";
-
 	/**
 	 * Validates that the module loads with default properties.
 	 */
 	public static class UsingNothingIntegrationTests extends LcboDataMapperProcessorIntegrationTests {
-		
-		public static void doGenericProcessorTest(Processor channels, MessageCollector collector) {
-			Product p = new Product();
-			p.setClass_code("AWA");
+		private static final String RESULT_SUBSTRING = "{\"name\":\"Jack Daniel's Tennessee Whiskey\",\"div_code\":null,\"dept_code\":null,\"class_code\":null,\"size\":0,\"csc\":215616,\"price\":0.0,\"lcboPrice\":4695.0,\"status\":null,\"tags\":\"jack daniel's daniels tennessee whiskey spirits whiskywhiskey usa brown forman brown-forman brownforman louisville operations bottle\"";
+	
+		public static void doGenericProcessorTest(Processor channels, MessageCollector collector, String expectedResult) {
+
+			LcboProduct p = new LcboProduct();
+			p.setName("Jack Daniel's Tennessee Whiskey");
+			p.setId(215616);
+			p.setPrice_in_cents(4695);
+			p.setPrimary_category("Spirits");
+			p.setSecondary_category("Whisky/Whiskey");
+			p.setTags("jack daniel's daniels tennessee whiskey spirits whiskywhiskey usa brown forman brown-forman brownforman louisville operations bottle");
+			p.setTertiary_category("Bourbon/American Whiskey");
 			
-			channels.input().send(new GenericMessage<Product>(p));
-			assertThat(collector.forChannel(channels.output()), receivesPayloadThat(startsWith(RESULT_SUBSTRING)));
+			channels.input().send(new GenericMessage<LcboProduct>(p));
+			assertThat(collector.forChannel(channels.output()), receivesPayloadThat(startsWith(expectedResult)));
 		}
 
 		@Test
 		public void test() {
-			doGenericProcessorTest(channels, collector);
+			doGenericProcessorTest(channels, collector, RESULT_SUBSTRING);
 		}
 	}
 
-	@SpringBootTest("lcbo.data.mapper.publishTopicPrefix=product/")
+	@SpringBootTest("lcbo.data.mapper.categoryInfoPublished=true")
 	public static class UsingPropsIntegrationTests extends LcboDataMapperProcessorIntegrationTests {
+		private static final String RESULT_SUBSTRING = "{\"name\":\"Jack Daniel's Tennessee Whiskey\",\"div_code\":null,\"dept_code\":null,\"class_code\":\"Spirits:Whisky/Whiskey:Bourbon/American Whiskey\",\"size\":0,\"csc\":215616,\"price\":0.0,\"lcboPrice\":4695.0,\"status\":null,\"tags\":\"jack daniel's daniels tennessee whiskey spirits whiskywhiskey usa brown forman brown-forman brownforman louisville operations bottle\"";
+													   
 		@Test
 		public void test() {
-			UsingNothingIntegrationTests.doGenericProcessorTest(channels, collector);
+			UsingNothingIntegrationTests.doGenericProcessorTest(channels, collector, RESULT_SUBSTRING);
 		}
 	}
 

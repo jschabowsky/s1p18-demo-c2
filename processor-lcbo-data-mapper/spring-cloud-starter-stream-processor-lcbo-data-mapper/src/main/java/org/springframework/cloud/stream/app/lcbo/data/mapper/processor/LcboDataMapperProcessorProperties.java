@@ -14,16 +14,21 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
  */
 @ConfigurationProperties("lcbo.data.mapper")
 public class LcboDataMapperProcessorProperties {
-	public static final String DEFAULT_PUBLISH_TOPIC_PREFIX = "product/";
-
-	private String publishTopicPrefix = DEFAULT_PUBLISH_TOPIC_PREFIX;
-
-	public String getPublishTopicPrefix() {
-		return publishTopicPrefix;
+	public static final String DEFAULT_CATEGORY_DELIMITER = ":";
+	
+	private boolean categoryInfoPublished;
+	private String categoryDelimiter = DEFAULT_CATEGORY_DELIMITER;
+	
+	public boolean isCategoryInfoPublished() {
+		return categoryInfoPublished;
 	}
-
-	public void setPublishTopicPrefix(String publishTopicPrefix) {
-		this.publishTopicPrefix = publishTopicPrefix;
+	public void setCategoryInfoPublished(boolean categoryInfoPublished) {
+		this.categoryInfoPublished = categoryInfoPublished;
 	}
-
+	public String getCategoryDelimiter() {
+		return categoryDelimiter;
+	}
+	public void setCategoryDelimiter(String categoryDelimiter) {
+		this.categoryDelimiter = categoryDelimiter;
+	}
 }

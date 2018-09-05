@@ -9,19 +9,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.cloud.stream.annotation.EnableBinding;
 import org.springframework.cloud.stream.annotation.StreamListener;
+import org.springframework.cloud.stream.app.lcbo.pricelist.loader.domain.LcboProduct;
 
-import org.springframework.cloud.stream.binding.BinderAwareChannelResolver;
 import org.springframework.cloud.stream.messaging.Processor;
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
-import org.springframework.integration.annotation.MessageEndpoint;
-import org.springframework.integration.annotation.ServiceActivator;
-import org.springframework.messaging.Message;
-import org.springframework.messaging.support.MessageBuilder;
-import org.springframework.cloud.stream.annotation.Input;
-import org.springframework.cloud.stream.annotation.Output;
-import reactor.core.publisher.Flux;
-
+import org.springframework.messaging.handler.annotation.SendTo;
 import com.solace.demo.utahdabc.datamodel.Product;
 
 import org.apache.commons.logging.Log;
@@ -32,41 +23,45 @@ import org.apache.commons.logging.LogFactory;
  *
  * @author Solace Corp
  */
-@Configuration
+
 @EnableBinding(Processor.class)
 @EnableConfigurationProperties(LcboDataMapperProcessorProperties.class)
 public class LcboDataMapperProcessorConfiguration {
+	private static final Log LOG = LogFactory.getLog(LcboDataMapperProcessorConfiguration.class);
+
 	@Autowired
 	private LcboDataMapperProcessorProperties properties;
 
-	@Bean
-	public LcboDataMapperProcessor lcboPricelistLoader() {
-		return new LcboDataMapperProcessor();
-	}
+	@StreamListener(Processor.INPUT)
+	@SendTo(Processor.OUTPUT)
+	public Product process(LcboProduct lcboProduct) {
+		LOG.info(lcboProduct);
+		
+		Product p = new Product();
+		p.setName(lcboProduct.getName());
+		p.setSize(lcboProduct.getVolume_in_milliliters());
+		p.setLcboPrice(lcboProduct.getPrice_in_cents());
+		p.setTags(lcboProduct.getTags());
+		p.setCsc(lcboProduct.getId());
 
-	@Autowired
-    private BinderAwareChannelResolver resolver;
-
-	@MessageEndpoint
-	public static class LcboDataMapperProcessor {
-
-		private static final Log LOG = LogFactory.getLog(LcboDataMapperProcessor.class);
-
-		@Autowired
-		private LcboDataMapperProcessorProperties properties;
-
-	    @Autowired
-	    private Processor processor;
-
-		@ServiceActivator(inputChannel = Processor.INPUT, outputChannel = Processor.OUTPUT)	    
-		public void process(LcboProduct product) {
-			try {
-
+		if (properties.isCategoryInfoPublished()) {
+			StringBuilder classCode = new StringBuilder(); 
+			classCode.append(lcboProduct.getPrimary_category());
+			
+			if (lcboProduct.getSecondary_category() != null) {
+				classCode.append(properties.getCategoryDelimiter());
+				classCode.append(lcboProduct.getSecondary_category());
+				
+				if (lcboProduct.getTertiary_category() != null) {
+					classCode.append(properties.getCategoryDelimiter());
+					classCode.append(lcboProduct.getTertiary_category());
+				}
 			}
-			catch (Exception e) {
-				LOG.warn("Error in HTTP request", e);
-			}
+			
+			p.setClass_code(classCode.toString());
 		}
+
+		return p;
 	}
     
 }
