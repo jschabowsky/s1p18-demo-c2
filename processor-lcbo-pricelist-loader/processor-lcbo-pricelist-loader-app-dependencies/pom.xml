@@ -23,6 +23,5 @@
                 <version>0.0.1.BUILD-SNAPSHOT</version>
             </dependency>
         </dependencies>
-    </dependencyManagement>
-    
+    </dependencyManagement>    
 </project>

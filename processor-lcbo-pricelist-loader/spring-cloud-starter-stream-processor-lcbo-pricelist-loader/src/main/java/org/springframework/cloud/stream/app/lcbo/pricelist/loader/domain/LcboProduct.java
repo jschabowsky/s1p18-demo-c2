@@ -1,8 +1,10 @@
 package org.springframework.cloud.stream.app.lcbo.pricelist.loader.domain;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonInclude;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
+@JsonInclude(JsonInclude.Include.NON_EMPTY)
 public class LcboProduct {
 	private int id;
 	private String name;
