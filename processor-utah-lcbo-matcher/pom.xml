@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<artifactId>processor-utah-lcbo-matcher</artifactId>
+	<version>0.0.1.BUILD-SNAPSHOT</version>
+	<packaging>pom</packaging>
+
+	<parent>
+		<groupId>org.springframework.cloud.stream.app</groupId>
+		<artifactId>app-starters-build</artifactId>
+		<version>2.0.1.RELEASE</version>
+		<relativePath/>
+	</parent>
+
+	<modules>
+		<module>spring-cloud-starter-stream-processor-utah-lcbo-matcher</module>
+		<module>processor-utah-lcbo-matcher-app-dependencies</module>
+	</modules>
+
+	<dependencyManagement>
+		<dependencies>
+			<dependency>
+				<groupId>org.springframework.cloud.stream.app</groupId>
+				<artifactId>processor-utah-lcbo-matcher-app-dependencies</artifactId>
+				<version>0.0.1.BUILD-SNAPSHOT</version>
+				<type>pom</type>
+				<scope>import</scope>
+			</dependency>
+		</dependencies>
+	</dependencyManagement>
+	
+	<dependencies>
+		<dependency>
+			<groupId>com.solace.demo</groupId>
+			<artifactId>UtahDABC-Datamodel</artifactId>
+			<version>0.0.1-SNAPSHOT</version>
+			<scope>compile</scope>
+		</dependency>
+		
+		<dependency>
+			<groupId>org.springframework.data</groupId>
+			<artifactId>spring-data-redis</artifactId>
+		 </dependency>
+	</dependencies>
+
+</project>

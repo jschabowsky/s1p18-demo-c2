@@ -1,0 +1,14 @@
+debug: false
+server:
+  port: 0
+spring:
+  security:
+    user:
+      name: admin
+      password: solace1
+management:
+  endpoints:
+    web:
+      exposure:
+        include:
+        - bindings
