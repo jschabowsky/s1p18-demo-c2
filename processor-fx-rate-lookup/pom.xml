@@ -29,18 +29,16 @@
 		</dependencies>
 	</dependencyManagement>
 	
-	<dependencies>
+    <dependencies>
 		<dependency>
 			<groupId>com.solace.demo</groupId>
 			<artifactId>UtahDABC-Datamodel</artifactId>
 			<version>0.0.1-SNAPSHOT</version>
-			<scope>compile</scope>
 		</dependency>
-		
 		<dependency>
-			<groupId>org.springframework.boot</groupId>
-			<artifactId>spring-boot-starter-data-redis</artifactId>
+		    <groupId>org.springframework.boot</groupId>
+		    <artifactId>spring-boot-starter-data-redis</artifactId>
 		</dependency>
-	</dependencies>
-
+    </dependencies>
+	
 </project>

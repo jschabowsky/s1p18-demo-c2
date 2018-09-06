@@ -11,19 +11,6 @@
 		<artifactId>processor-lcbo-data-mapper</artifactId>
 		<version>0.0.1.BUILD-SNAPSHOT</version>
 	</parent>
-
-    <dependencies>
-		<dependency>
-			<groupId>org.springframework.cloud.stream.app</groupId>
-			<artifactId>spring-cloud-starter-stream-processor-lcbo-pricelist-loader</artifactId>
-			<version>0.0.1.BUILD-SNAPSHOT</version>
-		</dependency>
-		<dependency>
-			<groupId>com.solace.demo</groupId>
-			<artifactId>UtahDABC-Datamodel</artifactId>
-			<version>0.0.1-SNAPSHOT</version>
-		</dependency>
-    </dependencies>
 	
 	<build>
 		<plugins>
