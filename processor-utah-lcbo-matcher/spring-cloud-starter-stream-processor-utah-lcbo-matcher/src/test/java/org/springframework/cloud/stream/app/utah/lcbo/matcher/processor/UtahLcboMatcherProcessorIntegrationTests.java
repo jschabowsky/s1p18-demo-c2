@@ -23,7 +23,8 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import com.solace.demo.utahdabc.datamodel.Product;
 
-import static org.hamcrest.Matchers.is;
+import static org.hamcrest.CoreMatchers.containsString;
+
 import static org.junit.Assert.assertThat;
 import static org.springframework.cloud.stream.test.matcher.MessageQueueMatcher.receivesPayloadThat;
 
@@ -43,34 +44,36 @@ public abstract class UtahLcboMatcherProcessorIntegrationTests {
 	@Autowired
 	protected MessageCollector collector;
 		
-	private static final String TEST_RESULT = "{\"storeID\":\"0039\",\"storeName\":\"Store 39 - St George Metro\",\"productQty\":2,\"storeAddress\":\"161 North 900 East\",\"storeGeoLat\":0.0,\"storeGeoLng\":0.0,\"storeCity\":\"Saint George\",\"storePhone\":\"435-674-9550\"}";
-
 	/**
 	 * Validates that the module loads with default properties.
 	 */
 	public static class UsingNothingIntegrationTests extends UtahLcboMatcherProcessorIntegrationTests {
+		private static final String TEST_RESULT = "{\"name\":\"JACK DANIELS TENNESSEE HONEY 1750ml\",\"div_code\":null,\"dept_code\":null,\"class_code\":null,\"size\":1750,\"csc\":0,\"price\":0.0,\"lcboPrice\":57";
 		
-		public static void doGenericProcessorTest(Processor channels, MessageCollector collector) {
+		public static void doGenericProcessorTest(Processor channels, MessageCollector collector, String expectedResult) {
 			Product p = new Product();
-			p.setClass_code("AWS");
-			p.setCsc(4006);
+			p.setName("JACK DANIELS TENNESSEE HONEY 1750ml");
+			p.setSize(1750);
+			
 			channels.input().send(new GenericMessage<Product>(p));
-			assertThat(collector.forChannel(channels.output()), receivesPayloadThat(is(TEST_RESULT)));
+			assertThat(collector.forChannel(channels.output()), receivesPayloadThat(containsString(expectedResult)));
 		}
 
 		
 		@Test
 	    @Output(Processor.OUTPUT)
 		public void test() {
-			doGenericProcessorTest(channels, collector);
+			doGenericProcessorTest(channels, collector, TEST_RESULT);
 		}
 	}
 
-	@SpringBootTest("utah.lcbo.matcher.publishTopicPrefix=inventory/")
+	@SpringBootTest("utah.lcbo.matcher.minTokenMatchPercentage=90")
 	public static class UsingPropsIntegrationTests extends UtahLcboMatcherProcessorIntegrationTests {
+		private static final String TEST_RESULT = "{\"name\":\"JACK DANIELS TENNESSEE HONEY 1750ml\",\"div_code\":null,\"dept_code\":null,\"class_code\":null,\"size\":1750,\"csc\":0,\"price\":0.0,\"lcboPrice\":0.0,\"status\":null,\"tags\":null,\"creationTimestamp";
+		
 		@Test
 		public void test() {
-			UsingNothingIntegrationTests.doGenericProcessorTest(channels, collector);
+			UsingNothingIntegrationTests.doGenericProcessorTest(channels, collector, TEST_RESULT);
 		}
 	}
 

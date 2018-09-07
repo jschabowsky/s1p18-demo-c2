@@ -13,27 +13,16 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
  * @author Solace Corp.
  */
 @ConfigurationProperties("utah.lcbo.matcher")
-public class UtahLcboMatcherProcessorProperties {	
-	public static final String DEFAULT_INVENTORY_QUERY_URL = "https://webapps2.abc.utah.gov/Production/OnlineInventoryQuery/IQ/InventoryQuery.aspx";
-	public static final String DEFAULT_PUBLISH_TOPIC_PREFIX = "inventory/";
+public class UtahLcboMatcherProcessorProperties {
+	public static final int DEFAULT_MIN_TOKEN_MATCH_PERCENTAGE = 50;
 	
-	private String inventoryQueryUrl = DEFAULT_INVENTORY_QUERY_URL;
-	private String publishTopicPrefix = DEFAULT_PUBLISH_TOPIC_PREFIX;
+	private int minTokenMatchPercentage = DEFAULT_MIN_TOKEN_MATCH_PERCENTAGE;
 
-	public String getInventoryQueryUrl() {
-		return inventoryQueryUrl;
+	public int getMinTokenMatchPercentage() {
+		return minTokenMatchPercentage;
 	}
 
-	public void setInventoryQueryUrl(String inventoryQueryUrl) {
-		this.inventoryQueryUrl = inventoryQueryUrl;
+	public void setMinTokenMatchPercentage(int minTokenMatchPercentage) {
+		this.minTokenMatchPercentage = minTokenMatchPercentage;
 	}
-
-	public String getPublishTopicPrefix() {
-		return publishTopicPrefix;
-	}
-
-	public void setPublishTopicPrefix(String publishTopicPrefix) {
-		this.publishTopicPrefix = publishTopicPrefix;
-	}
-
 }
