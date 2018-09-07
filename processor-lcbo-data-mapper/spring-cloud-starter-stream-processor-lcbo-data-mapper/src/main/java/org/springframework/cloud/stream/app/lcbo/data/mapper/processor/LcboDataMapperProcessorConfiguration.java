@@ -10,7 +10,6 @@ import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.cloud.stream.annotation.EnableBinding;
 import org.springframework.cloud.stream.annotation.StreamListener;
 import org.springframework.cloud.stream.app.lcbo.pricelist.loader.domain.LcboProduct;
-
 import org.springframework.cloud.stream.messaging.Processor;
 import org.springframework.messaging.handler.annotation.SendTo;
 import com.solace.demo.utahdabc.datamodel.Product;
@@ -56,6 +55,8 @@ public class LcboDataMapperProcessorConfiguration {
 			
 			p.setClass_code(classCode);
 		}
+		
+		p.setSPA(lcboProduct.getImage_url());
 
 		return p;
 	}

@@ -22,6 +22,8 @@ public class LcboProduct {
 	
 	private String producer_name;
 	
+	private String image_url;
+	
 	public int getId() {
 		return id;
 	}
@@ -110,6 +112,14 @@ public class LcboProduct {
 		this.producer_name = producer_name;
 	}
 	
+	public String getImage_url() {
+		return image_url;
+	}
+
+	public void setImage_url(String image_url) {
+		this.image_url = image_url;
+	}
+
 	@Override
 	public String toString() {
 		return name;

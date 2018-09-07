@@ -42,7 +42,7 @@ public abstract class LcboPricelistLoaderProcessorIntegrationTests {
 	@Autowired
 	protected MessageCollector collector;
 	
-	private static final String RESULT_SUBSTRING = "{\"id\":52902,\"name\":\"Kissui Vodka\",\"tags\":\"kissui vodka spirits japan region not specified takara sake usa inc bottle\",\"price_in_cents\":2495,\"primary_category\":\"Spirits\",\"secondary_category\":\"Vodka\",\"tertiary_category\":\"Unflavoured Vodka\",\"volume_in_milliliters\":750,\"alcohol_content\":4000,\"inventory_count\":0,\"producer_name\":\"Takara Sake U.S.A. Inc.\"}";
+	private static final String RESULT_SUBSTRING = "{\"id\":52902,\"name\":\"Kissui Vodka\",\"tags\":\"kissui vodka spirits japan region not specified takara sake usa inc bottle\",\"price_in_cents\":2495,\"primary_category\":\"Spirits\",\"secondary_category\":\"Vodka\",\"tertiary_category\":\"Unflavoured Vodka\",\"volume_in_milliliters\":750,\"alcohol_content\":4000,\"inventory_count\":0,\"producer_name\":\"Takara Sake U.S.A. Inc.\",\"image_url\":\"https://dx5vpyka4lqst.cloudfront.net/products/52902/images/full.jpeg\"}";
 	
 	@SpringBootTest("lcbo.pricelist.loader.processorUrl=http://lcboapi.com/products?where=is_dead,is_discontinued&q=sake")
 	public static class UsingPropsIntegrationTests extends LcboPricelistLoaderProcessorIntegrationTests {
