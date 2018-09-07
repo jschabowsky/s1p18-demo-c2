@@ -51,7 +51,7 @@ public abstract class FxRateLookupProcessorIntegrationTests {
 			Product p = new Product();
 			p.setName("Clown Royale With Cheese");
 			p.setLcboPrice(100);
-			p.setSize(750);
+			p.setSize(666);
 			channels.input().send(new GenericMessage<Product>(p));
 			assertThat(collector.forChannel(channels.output()), receivesPayloadThat(containsString(RESULT_SUBSTRING)));
 		}
