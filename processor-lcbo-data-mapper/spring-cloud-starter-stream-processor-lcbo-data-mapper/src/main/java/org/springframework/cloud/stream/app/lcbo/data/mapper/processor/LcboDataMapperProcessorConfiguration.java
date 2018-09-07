@@ -15,6 +15,9 @@ import org.springframework.cloud.stream.messaging.Processor;
 import org.springframework.messaging.handler.annotation.SendTo;
 import com.solace.demo.utahdabc.datamodel.Product;
 
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -45,24 +48,15 @@ public class LcboDataMapperProcessorConfiguration {
 		p.setCsc(lcboProduct.getId());
 
 		if (properties.isCategoryInfoPublished()) {
-			StringBuilder classCode = new StringBuilder(); 
-			classCode.append(lcboProduct.getPrimary_category());
+			String classCode = Stream.of(lcboProduct.getPrimary_category(),
+					lcboProduct.getSecondary_category(),
+					lcboProduct.getTertiary_category())
+			.filter(s -> s != null && !s.isEmpty())
+			.collect(Collectors.joining(properties.getCategoryDelimiter()));
 			
-			if (lcboProduct.getSecondary_category() != null) {
-				classCode.append(properties.getCategoryDelimiter());
-				classCode.append(lcboProduct.getSecondary_category());
-				
-				if (lcboProduct.getTertiary_category() != null) {
-					classCode.append(properties.getCategoryDelimiter());
-					classCode.append(lcboProduct.getTertiary_category());
-				}
-			}
-			
-			p.setClass_code(classCode.toString());
+			p.setClass_code(classCode);
 		}
 
 		return p;
 	}
-    
 }
- 
