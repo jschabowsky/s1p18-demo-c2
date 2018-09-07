@@ -16,7 +16,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 public class FxRateLookupProcessorProperties {	
 	public static final String DEFAULT_BASE_LOOKUP_CURRENCY = "USD";
 	public static final String DEFAULT_TARGET_LOOKUP_CURRENCY = "CAD";
-	public static final long DEFAULT_CACHE_TTL_SEC = 14400;	// 4 Hours
+	public static final long DEFAULT_CACHE_TTL_SEC = 86400;
 	
 	private String baseLookupCurrency = DEFAULT_BASE_LOOKUP_CURRENCY;
 	private String targetLookupCurrency = DEFAULT_TARGET_LOOKUP_CURRENCY;
