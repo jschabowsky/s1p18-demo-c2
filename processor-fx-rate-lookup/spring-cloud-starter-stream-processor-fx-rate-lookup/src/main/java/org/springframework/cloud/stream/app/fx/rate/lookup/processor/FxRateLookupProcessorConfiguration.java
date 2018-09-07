@@ -63,10 +63,11 @@ public class FxRateLookupProcessorConfiguration {
 	@Bean
 	public RedisOperations<String, Double> redisTemplate() {
 		final RedisTemplate<String, Double> template =  new RedisTemplate<String, Double>();
-		template.setConnectionFactory( redisConnectionFactory() );
+		template.setConnectionFactory(redisConnectionFactory());
 		template.setKeySerializer(new StringRedisSerializer());
+		template.setHashKeySerializer(new StringRedisSerializer());
 		template.setValueSerializer(new GenericToStringSerializer<Double>(Double.class));
-		
+
 		return template;
 	}	
 	
@@ -80,6 +81,8 @@ public class FxRateLookupProcessorConfiguration {
 		p.setPrice(p.getLcboPrice() / getFxRate(properties.getBaseLookupCurrency(), 
 					properties.getTargetLookupCurrency(),
 					properties.getCacheTtlSec()));
+		
+		redisOps.opsForHash().put(Integer.valueOf(p.getSize()).toString(), p.getName().toUpperCase(), p.getPrice());
 		
 		return p;
     }

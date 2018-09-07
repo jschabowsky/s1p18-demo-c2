@@ -41,17 +41,17 @@ public abstract class FxRateLookupProcessorIntegrationTests {
 	@Autowired
 	protected MessageCollector collector;
 	
-	//***TODO: DO NOT COMMIT
-	@SpringBootTest("fx.rate.lookup.fxLookupUrl=https://openexchangerates.org/api/latest.json?app_id=<ENTER_YOUR_KEY_HERE>")
+	@SpringBootTest("fx.rate.lookup.fxLookupUrl=https://openexchangerates.org/api/latest.json?app_id=<INSERT_APP_ID_HERE>")
 	public static class UsingPropsIntegrationTests extends FxRateLookupProcessorIntegrationTests {
 		// Adjust this as FX values fluctuate
-		private static final String RESULT_SUBSTRING = "{\"name\":\"Clown Royale With Cheese\",\"div_code\":null,\"dept_code\":null,\"class_code\":null,\"size\":0,\"csc\":0,\"price\":7";
+		private static final String RESULT_SUBSTRING = "{\"name\":\"Clown Royale With Cheese\",\"div_code\":null,\"dept_code\":null,\"class_code\":null,\"size\":750,\"csc\":0,\"price\":7";
 		
 		@Test
 		public void test() {
 			Product p = new Product();
 			p.setName("Clown Royale With Cheese");
 			p.setLcboPrice(100);
+			p.setSize(750);
 			channels.input().send(new GenericMessage<Product>(p));
 			assertThat(collector.forChannel(channels.output()), receivesPayloadThat(containsString(RESULT_SUBSTRING)));
 		}
