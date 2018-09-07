@@ -65,8 +65,8 @@ public class FxRateLookupProcessorConfiguration {
 		final RedisTemplate<String, Double> template =  new RedisTemplate<String, Double>();
 		template.setConnectionFactory(redisConnectionFactory());
 		template.setKeySerializer(new StringRedisSerializer());
-		template.setHashKeySerializer(new StringRedisSerializer());
 		template.setValueSerializer(new GenericToStringSerializer<Double>(Double.class));
+		template.setHashKeySerializer(new StringRedisSerializer());
 
 		return template;
 	}	
