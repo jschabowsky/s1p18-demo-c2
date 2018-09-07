@@ -46,7 +46,7 @@ public abstract class LcboDataMapperProcessorIntegrationTests {
 	 * Validates that the module loads with default properties.
 	 */
 	public static class UsingNothingIntegrationTests extends LcboDataMapperProcessorIntegrationTests {
-		private static final String RESULT_SUBSTRING = "{\"name\":\"Jack Daniel's Tennessee Whiskey\",\"div_code\":null,\"dept_code\":null,\"class_code\":null,\"size\":0,\"csc\":215616,\"price\":0.0,\"lcboPrice\":4695.0,\"status\":null,\"tags\":\"jack daniel's daniels tennessee whiskey spirits whiskywhiskey usa brown forman brown-forman brownforman louisville operations bottle\"";
+		private static final String RESULT_SUBSTRING = "{\"name\":\"Jack Daniel's Tennessee Whiskey\",\"div_code\":null,\"dept_code\":null,\"class_code\":null,\"size\":0,\"csc\":215616,\"price\":0.0,\"lcboPrice\":46.95,\"status\":null,\"tags\":\"jack daniel's daniels tennessee whiskey spirits whiskywhiskey usa brown forman brown-forman brownforman louisville operations bottle\",\"creationTimestamp\":";
 	
 		public static void doGenericProcessorTest(Processor channels, MessageCollector collector, String expectedResult) {
 
@@ -71,7 +71,7 @@ public abstract class LcboDataMapperProcessorIntegrationTests {
 
 	@SpringBootTest("lcbo.data.mapper.categoryInfoPublished=true")
 	public static class UsingPropsIntegrationTests extends LcboDataMapperProcessorIntegrationTests {
-		private static final String RESULT_SUBSTRING = "{\"name\":\"Jack Daniel's Tennessee Whiskey\",\"div_code\":null,\"dept_code\":null,\"class_code\":\"Spirits:Whisky/Whiskey:Bourbon/American Whiskey\",\"size\":0,\"csc\":215616,\"price\":0.0,\"lcboPrice\":4695.0,\"status\":null,\"tags\":\"jack daniel's daniels tennessee whiskey spirits whiskywhiskey usa brown forman brown-forman brownforman louisville operations bottle\"";
+		private static final String RESULT_SUBSTRING = "{\"name\":\"Jack Daniel's Tennessee Whiskey\",\"div_code\":null,\"dept_code\":null,\"class_code\":\"Spirits:Whisky/Whiskey:Bourbon/American Whiskey\",\"size\":0,\"csc\":215616,\"price\":0.0,\"lcboPrice\":46.95,\"status\":null,\"tags\":\"jack daniel's daniels tennessee whiskey spirits whiskywhiskey usa brown forman brown-forman brownforman louisville operations bottle\",\"creationTimestamp\":";
 													   
 		@Test
 		public void test() {

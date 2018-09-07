@@ -43,7 +43,7 @@ public class LcboDataMapperProcessorConfiguration {
 		Product p = new Product();
 		p.setName(lcboProduct.getName());
 		p.setSize(lcboProduct.getVolume_in_milliliters());
-		p.setLcboPrice(lcboProduct.getPrice_in_cents());
+		p.setLcboPrice((double)lcboProduct.getPrice_in_cents() / 100);
 		p.setTags(lcboProduct.getTags());
 		p.setCsc(lcboProduct.getId());
 
