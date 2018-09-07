@@ -13,28 +13,43 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
  * @author Solace Corp.
  */
 @ConfigurationProperties("fx.rate.lookup")
-public class FxRateLookupProcessorProperties {
-	public static final String DEFAULT_LOOKUP_STATE = "UT";
-		
-	private String googleMapsApiKey;
+public class FxRateLookupProcessorProperties {	
+	public static final String DEFAULT_BASE_LOOKUP_CURRENCY = "USD";
+	public static final String DEFAULT_TARGET_LOOKUP_CURRENCY = "CAD";
+	public static final long DEFAULT_CACHE_TTL_SEC = 14400;	// 4 Hours
 	
-	private String lookupState = DEFAULT_LOOKUP_STATE;
+	private String baseLookupCurrency = DEFAULT_BASE_LOOKUP_CURRENCY;
+	private String targetLookupCurrency = DEFAULT_TARGET_LOOKUP_CURRENCY;
 
-	public String getGoogleMapsApiKey() {
-		return googleMapsApiKey;
+	private long cacheTtlSec = DEFAULT_CACHE_TTL_SEC;
+	private String fxLookupUrl;
+	
+	public String getFxLookupUrl() {
+		return fxLookupUrl;
 	}
 
-	public void setGoogleMapsApiKey(String googleMapsApiKey) {
-		this.googleMapsApiKey = googleMapsApiKey;
+	public void setFxLookupUrl(String fxLookupUrl) {
+		this.fxLookupUrl = fxLookupUrl;
 	}
 
-	public String getLookupState() {
-		return lookupState;
+	public String getBaseLookupCurrency() {
+		return baseLookupCurrency;
 	}
 
-	public void setLookupState(String lookupState) {
-		this.lookupState = lookupState;
+	public String getTargetLookupCurrency() {
+		return targetLookupCurrency;
 	}
 	
-	
+	public void setTargetLookupCurrency(String targetLookupCurrency) {
+		this.targetLookupCurrency = targetLookupCurrency;
+	}
+
+	public long getCacheTtlSec() {
+		return cacheTtlSec;
+	}
+
+	public void setCacheTtlSec(long cacheTtlSec) {
+		this.cacheTtlSec = cacheTtlSec;
+	}
+
 }
