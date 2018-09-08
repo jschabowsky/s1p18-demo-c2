@@ -23,7 +23,7 @@ import org.springframework.web.client.RestTemplate;
 
 import org.springframework.cloud.stream.messaging.Processor;
 import org.springframework.context.annotation.Bean;
-import org.springframework.data.redis.connection.lettuce.LettuceConnectionFactory;
+import org.springframework.data.redis.connection.RedisConnectionFactory;
 import org.springframework.data.redis.core.RedisOperations;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.serializer.GenericToStringSerializer;
@@ -54,18 +54,13 @@ public class FxRateLookupProcessorConfiguration {
 	public RestTemplate restTemplate() {
 		return new RestTemplate();
 	}
-	
+		
 	@Bean
-	public LettuceConnectionFactory redisConnectionFactory() {
-		return new LettuceConnectionFactory();
-	}
-	
-	@Bean
-	public RedisOperations<String, Double> redisTemplate() {
+	public RedisOperations<String, Double> redisTemplate(RedisConnectionFactory rcf) {
 		final RedisTemplate<String, Double> template =  new RedisTemplate<String, Double>();
-		template.setConnectionFactory(redisConnectionFactory());
+		template.setConnectionFactory(rcf);
 		template.setKeySerializer(new StringRedisSerializer());
-		template.setValueSerializer(new GenericToStringSerializer<Double>(Double.class));
+		template.setValueSerializer(new GenericToStringSerializer<Double>(Double.class));		
 		template.setHashKeySerializer(new StringRedisSerializer());
 
 		return template;
@@ -82,8 +77,10 @@ public class FxRateLookupProcessorConfiguration {
 					properties.getTargetLookupCurrency(),
 					properties.getCacheTtlSec()));
 		
-		// Cache the LCBO product for later price comparison, grouping by volume
-		redisOps.opsForHash().put(Integer.valueOf(p.getSize()).toString(), p.getName(), p.getPrice());
+		// Cache the LCBO product for later price comparison, grouping by volume, using name + volume as key to match Utah
+		String key = Integer.valueOf(p.getSize()).toString();
+		String hashKey = p.getName() + " " + p.getSize();
+		redisOps.opsForHash().put(key, hashKey, p.getPrice());
 		
 		return p;
     }

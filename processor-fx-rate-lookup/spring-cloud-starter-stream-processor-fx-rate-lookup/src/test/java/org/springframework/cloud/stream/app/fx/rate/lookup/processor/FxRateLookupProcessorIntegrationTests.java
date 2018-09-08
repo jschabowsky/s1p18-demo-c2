@@ -44,7 +44,7 @@ public abstract class FxRateLookupProcessorIntegrationTests {
 	@SpringBootTest("fx.rate.lookup.fxLookupUrl=https://openexchangerates.org/api/latest.json?app_id=<INSERT_APP_ID_HERE>")
 	public static class UsingPropsIntegrationTests extends FxRateLookupProcessorIntegrationTests {
 		// Adjust this as FX values fluctuate
-		private static final String RESULT_SUBSTRING = "{\"name\":\"Clown Royale With Cheese\",\"div_code\":null,\"dept_code\":null,\"class_code\":null,\"size\":750,\"csc\":0,\"price\":7";
+		private static final String RESULT_SUBSTRING = "{\"name\":\"Clown Royale With Cheese\",\"div_code\":null,\"dept_code\":null,\"class_code\":null,\"size\":666,\"csc\":0,\"price\":7";
 		
 		@Test
 		public void test() {
