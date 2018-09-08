@@ -82,7 +82,8 @@ public class FxRateLookupProcessorConfiguration {
 					properties.getTargetLookupCurrency(),
 					properties.getCacheTtlSec()));
 		
-		redisOps.opsForHash().put(Integer.valueOf(p.getSize()).toString(), p.getName().toUpperCase(), p.getPrice());
+		// Cache the LCBO product for later price comparison, grouping by volume
+		redisOps.opsForHash().put(Integer.valueOf(p.getSize()).toString(), p.getName(), p.getPrice());
 		
 		return p;
     }
