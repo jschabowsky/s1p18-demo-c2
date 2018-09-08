@@ -48,12 +48,13 @@ public abstract class UtahLcboMatcherProcessorIntegrationTests {
 	 * Validates that the module loads with default properties.
 	 */
 	public static class UsingNothingIntegrationTests extends UtahLcboMatcherProcessorIntegrationTests {
-		private static final String TEST_RESULT = "{\"name\":\"JACK DANIELS TENNESSEE HONEY 1750ml\",\"div_code\":null,\"dept_code\":null,\"class_code\":null,\"size\":1750,\"csc\":0,\"price\":0.0,\"lcboPrice\":57";
+		private static final String TEST_RESULT = "{\"name\":\"JACK DANIELS TENNESSEE HONEY 750ml\",\"div_code\":null,\"dept_code\":null,\"class_code\":null,\"size\":750,\"csc\":0,\"price\":21.99,\"lcboPrice\":28";
 		
 		public static void doGenericProcessorTest(Processor channels, MessageCollector collector, String expectedResult) {
 			Product p = new Product();
-			p.setName("JACK DANIELS TENNESSEE HONEY 1750ml");
-			p.setSize(1750);
+			p.setName("JACK DANIELS TENNESSEE HONEY 750ml");
+			p.setSize(750);
+			p.setPrice(21.99);
 			
 			channels.input().send(new GenericMessage<Product>(p));
 			assertThat(collector.forChannel(channels.output()), receivesPayloadThat(containsString(expectedResult)));
@@ -69,7 +70,7 @@ public abstract class UtahLcboMatcherProcessorIntegrationTests {
 
 	@SpringBootTest("utah.lcbo.matcher.minTokenMatchPercentage=90")
 	public static class UsingPropsIntegrationTests extends UtahLcboMatcherProcessorIntegrationTests {
-		private static final String TEST_RESULT = "{\"name\":\"JACK DANIELS TENNESSEE HONEY 1750ml\",\"div_code\":null,\"dept_code\":null,\"class_code\":null,\"size\":1750,\"csc\":0,\"price\":0.0,\"lcboPrice\":0.0,\"status\":null,\"tags\":null,\"creationTimestamp";
+		private static final String TEST_RESULT = "{\"name\":\"JACK DANIELS TENNESSEE HONEY 750ml\",\"div_code\":null,\"dept_code\":null,\"class_code\":null,\"size\":750,\"csc\":0,\"price\":21";
 		
 		@Test
 		public void test() {

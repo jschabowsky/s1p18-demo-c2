@@ -15,8 +15,10 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 @ConfigurationProperties("utah.lcbo.matcher")
 public class UtahLcboMatcherProcessorProperties {
 	public static final int DEFAULT_MIN_TOKEN_MATCH_PERCENTAGE = 50;
+	public static final double DEFAULT_MAX_ALLOWABLE_PRICE_DELTA = 75;
 	
 	private int minTokenMatchPercentage = DEFAULT_MIN_TOKEN_MATCH_PERCENTAGE;
+	private double maxAllowablePriceDelta = DEFAULT_MAX_ALLOWABLE_PRICE_DELTA;
 
 	public int getMinTokenMatchPercentage() {
 		return minTokenMatchPercentage;
@@ -24,5 +26,13 @@ public class UtahLcboMatcherProcessorProperties {
 
 	public void setMinTokenMatchPercentage(int minTokenMatchPercentage) {
 		this.minTokenMatchPercentage = minTokenMatchPercentage;
+	}
+
+	public double getMaxAllowablePriceDelta() {
+		return maxAllowablePriceDelta;
+	}
+
+	public void setMaxAllowablePriceDelta(double maxAllowablePriceDelta) {
+		this.maxAllowablePriceDelta = maxAllowablePriceDelta;
 	}
 }

@@ -5,9 +5,8 @@
  */
 package org.springframework.cloud.stream.app.utah.lcbo.matcher.processor;
 
-import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.Set;
-import java.util.StringTokenizer;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -19,7 +18,8 @@ import org.springframework.cloud.stream.annotation.StreamListener;
 
 import org.springframework.cloud.stream.messaging.Processor;
 import org.springframework.context.annotation.Bean;
-import org.springframework.data.redis.connection.lettuce.LettuceConnectionFactory;
+import org.springframework.data.redis.connection.RedisConnectionFactory;
+
 import org.springframework.data.redis.core.RedisOperations;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.serializer.GenericToStringSerializer;
@@ -40,16 +40,11 @@ public class UtahLcboMatcherProcessorConfiguration {
 
 	@Autowired
 	private UtahLcboMatcherProcessorProperties properties;
-	
+
 	@Bean
-	public LettuceConnectionFactory redisConnectionFactory() {
-		return new LettuceConnectionFactory();
-	}
-	
-	@Bean
-	public RedisOperations<String, Double> redisTemplate() {
+	public RedisOperations<String, Double> redisTemplate(RedisConnectionFactory rcf) {
 		final RedisTemplate<String, Double> template =  new RedisTemplate<String, Double>();
-		template.setConnectionFactory(redisConnectionFactory());
+		template.setConnectionFactory(rcf);
 		template.setKeySerializer(new StringRedisSerializer());
 		template.setValueSerializer(new GenericToStringSerializer<Double>(Double.class));
 		template.setHashKeySerializer(new StringRedisSerializer());
@@ -72,9 +67,15 @@ public class UtahLcboMatcherProcessorConfiguration {
 			return p;
 		}
 		
-		String[] utahWords = p.getName().toUpperCase().replaceAll("[^a-zA-Z ]", "").toUpperCase().split("\\s+");
+		String utahName = p.getName();
+		// Drop the last two chars in the name as it's usually the volume unit (ml)
+		String[] utahWords = utahName.substring(0, utahName.length() - 2)
+				.toUpperCase()
+				.replaceAll("[^a-zA-Z0-9 ]", "")
+				.split("\\s+");
+		
 		// Create a set of words making up the Utah name to comparison for similarity to the LCBO name
-		Set<String> utahWordSet = new HashSet<String>();
+		Set<String> utahWordSet = new LinkedHashSet<String>();
 		for(String utahWord : utahWords) {
 			utahWordSet.add(utahWord);
 		}
@@ -85,12 +86,14 @@ public class UtahLcboMatcherProcessorConfiguration {
 		
 		for(Object lcboNameObj : lcboNames) {
 			String lcboName = (String)lcboNameObj;
-			String[] lcboWords = lcboName.toUpperCase().replaceAll("[^a-zA-Z ]", "").toUpperCase().split("\\s+");
-			// Ensure at least the first word in each name is identical
-			if(!lcboWords[0].equals(utahWords[0]))
+			String[] lcboWords = lcboName.toUpperCase()
+					.replaceAll("[^a-zA-Z0-9 ]", "")
+					.split("\\s+");
+			// Ensure at least the first and last words are identical (name and volume)
+			if(!lcboWords[0].equals(utahWords[0]) || !lcboWords[lcboWords.length - 1].equals(utahWords[utahWords.length - 1]))
 				continue;
 			
-			Set<String> lcboWordSet = new HashSet<String>();
+			Set<String> lcboWordSet = new LinkedHashSet<String>();
 			for(String lcboWord : lcboWords) {
 				lcboWordSet.add(lcboWord);
 			}
@@ -108,8 +111,13 @@ public class UtahLcboMatcherProcessorConfiguration {
 		if (bestMatchWhiskey != null) {
 			Double lcboPrice = (Double)redisOps.opsForHash().get(size.toString(), bestMatchWhiskey);
 			
-			p.setLcboPrice(lcboPrice);
-			p.setSPA(bestMatchWhiskey);
+			if (Math.abs(p.getPrice() - lcboPrice) <= properties.getMaxAllowablePriceDelta()) { 
+				p.setLcboPrice(lcboPrice);
+				p.setSPA(bestMatchWhiskey);
+				
+				LOG.info("Matched Utah: " + p.getName() + "[$" + p.getPrice() + "] to LCBO: " 
+						+ bestMatchWhiskey + "[$" + lcboPrice + "]");
+			}
 		}
 		
 		return p;
