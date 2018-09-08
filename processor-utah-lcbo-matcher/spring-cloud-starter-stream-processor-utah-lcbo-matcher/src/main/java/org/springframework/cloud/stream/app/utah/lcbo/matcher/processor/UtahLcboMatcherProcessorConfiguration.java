@@ -63,42 +63,45 @@ public class UtahLcboMatcherProcessorConfiguration {
 	@StreamListener(Processor.INPUT)
 	@SendTo(Processor.OUTPUT)
     public Product process(Product p) {
+		// Lookup all cached LCBO products matching this Utah product's volume
 		Integer size = new Integer(p.getSize());
-		Set<Object> lcboWhiskeyNames = redisOps.opsForHash().keys(size.toString());
+		Set<Object> lcboNames = redisOps.opsForHash().keys(size.toString());
 
-		if (lcboWhiskeyNames == null) {
+		if (lcboNames == null) {
 			LOG.info("No matching LCBO product found for: " + p.getName());
 			return p;
 		}
 		
-		StringTokenizer utahTokens = new StringTokenizer(p.getName().toUpperCase());
-		Set<String> utahTokenSet = new HashSet<String>();
-		while(utahTokens.hasMoreTokens()) {
-			utahTokenSet.add(utahTokens.nextToken());
+		String[] utahWords = p.getName().toUpperCase().replaceAll("[^a-zA-Z ]", "").toUpperCase().split("\\s+");
+		// Create a set of words making up the Utah name to comparison for similarity to the LCBO name
+		Set<String> utahWordSet = new HashSet<String>();
+		for(String utahWord : utahWords) {
+			utahWordSet.add(utahWord);
 		}
 		
 		double maxHitRatio = 0;
 		String bestMatchWhiskey = null;
 		double minHitThreshold = (double)properties.getMinTokenMatchPercentage() / 100;
 		
-		for(Object lcboWhiskeyName : lcboWhiskeyNames) {
-			StringTokenizer lcboTokens = new StringTokenizer((String)lcboWhiskeyName);
-
-			Set<String> lcboTokenSet = new HashSet<String>();
-			while(lcboTokens.hasMoreTokens()) {
-				lcboTokenSet.add(lcboTokens.nextToken());
+		for(Object lcboNameObj : lcboNames) {
+			String lcboName = (String)lcboNameObj;
+			String[] lcboWords = lcboName.toUpperCase().replaceAll("[^a-zA-Z ]", "").toUpperCase().split("\\s+");
+			// Ensure at least the first word in each name is identical
+			if(!lcboWords[0].equals(utahWords[0]))
+				continue;
+			
+			Set<String> lcboWordSet = new HashSet<String>();
+			for(String lcboWord : lcboWords) {
+				lcboWordSet.add(lcboWord);
 			}
 			
-			int initLcboTokenCount = lcboTokenSet.size();
-			lcboTokenSet.retainAll(utahTokenSet);
+			int lcboWordCount = lcboWords.length;
+			lcboWordSet.retainAll(utahWordSet);
 			
-			double hitRatio = (double)lcboTokenSet.size() / initLcboTokenCount;
-			
-			if (hitRatio >= minHitThreshold) {
-				if (hitRatio > maxHitRatio) {
-					bestMatchWhiskey = (String)lcboWhiskeyName;
-					maxHitRatio = hitRatio;
-				}
+			double hitRatio = (double)lcboWordSet.size() / lcboWordCount;			
+			if (hitRatio >= minHitThreshold && hitRatio > maxHitRatio) {
+				bestMatchWhiskey = lcboName;
+				maxHitRatio = hitRatio;
 			}
 		}
 		
