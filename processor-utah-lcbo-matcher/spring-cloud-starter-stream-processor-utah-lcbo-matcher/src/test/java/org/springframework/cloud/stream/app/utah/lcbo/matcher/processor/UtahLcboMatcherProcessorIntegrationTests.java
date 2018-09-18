@@ -17,16 +17,21 @@ import org.springframework.cloud.stream.annotation.Output;
 
 import org.springframework.cloud.stream.messaging.Processor;
 import org.springframework.cloud.stream.test.binder.MessageCollector;
+import org.springframework.messaging.Message;
 import org.springframework.messaging.support.GenericMessage;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import com.solace.demo.utahdabc.datamodel.Product;
 
+import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 import static org.hamcrest.CoreMatchers.containsString;
-
+import static org.hamcrest.CoreMatchers.startsWith;
 import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
 import static org.springframework.cloud.stream.test.matcher.MessageQueueMatcher.receivesPayloadThat;
+
+import java.util.concurrent.TimeUnit;
 
 /**
  * Integration Tests for the lookup Processor.
@@ -50,31 +55,46 @@ public abstract class UtahLcboMatcherProcessorIntegrationTests {
 	public static class UsingNothingIntegrationTests extends UtahLcboMatcherProcessorIntegrationTests {
 		private static final String TEST_RESULT = "{\"name\":\"JACK DANIELS TENNESSEE HONEY 750ml\",\"div_code\":null,\"dept_code\":null,\"class_code\":null,\"size\":750,\"csc\":0,\"price\":21.99,\"lcboPrice\":28";
 		
-		public static void doGenericProcessorTest(Processor channels, MessageCollector collector, String expectedResult) {
-			Product p = new Product();
-			p.setName("JACK DANIELS TENNESSEE HONEY 750ml");
-			p.setSize(750);
-			p.setPrice(21.99);
-			
+		public static void doGenericProcessorTest(Processor channels, MessageCollector collector, Product p, String expectedResult) {
 			channels.input().send(new GenericMessage<Product>(p));
 			assertThat(collector.forChannel(channels.output()), receivesPayloadThat(containsString(expectedResult)));
 		}
 
 		
 		@Test
-	    @Output(Processor.OUTPUT)
-		public void test() {
-			doGenericProcessorTest(channels, collector, TEST_RESULT);
+		public void testMatch() {
+			Product p = new Product();
+			p.setName("JACK DANIELS TENNESSEE HONEY 750ml");
+			p.setSize(750);
+			p.setPrice(21.99);
+
+			doGenericProcessorTest(channels, collector, p, TEST_RESULT);
 		}
+		
+		@Test(expected = RuntimeException.class)
+		public void testNoMatch() {
+			Product p = new Product();
+			p.setName("JACK ASTOR'S BEER");
+			p.setSize(750);
+			p.setPrice(21.99);
+
+			channels.input().send(new GenericMessage<Product>(p));			
+		}
+
 	}
 
-	@SpringBootTest("utah.lcbo.matcher.minTokenMatchPercentage=90")
+	@SpringBootTest("utah.lcbo.matcher.minTokenMatchPercentage=75")
 	public static class UsingPropsIntegrationTests extends UtahLcboMatcherProcessorIntegrationTests {
 		private static final String TEST_RESULT = "{\"name\":\"JACK DANIELS TENNESSEE HONEY 750ml\",\"div_code\":null,\"dept_code\":null,\"class_code\":null,\"size\":750,\"csc\":0,\"price\":21";
 		
 		@Test
 		public void test() {
-			UsingNothingIntegrationTests.doGenericProcessorTest(channels, collector, TEST_RESULT);
+			Product p = new Product();
+			p.setName("JACK DANIELS TENNESSEE HONEY 750ml");
+			p.setSize(750);
+			p.setPrice(21.99);
+			
+			UsingNothingIntegrationTests.doGenericProcessorTest(channels, collector, p, TEST_RESULT);
 		}
 	}
 

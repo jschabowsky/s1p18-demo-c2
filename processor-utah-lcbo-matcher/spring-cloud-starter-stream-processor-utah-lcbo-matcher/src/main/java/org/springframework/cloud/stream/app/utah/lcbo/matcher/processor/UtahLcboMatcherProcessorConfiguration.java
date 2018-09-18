@@ -36,7 +36,10 @@ import com.solace.demo.utahdabc.datamodel.Product;
 @EnableBinding(Processor.class)
 @EnableConfigurationProperties(UtahLcboMatcherProcessorProperties.class)
 public class UtahLcboMatcherProcessorConfiguration {
-	private static final Log LOG = LogFactory.getLog(UtahLcboMatcherProcessorConfiguration.class);	
+	private static final Log LOG = LogFactory.getLog(UtahLcboMatcherProcessorConfiguration.class);
+	private static final String NON_ALPHA_MATCH = "[^a-zA-Z0-9 ]";
+	private static final String WHITESPACE_MATCH = "\\s+";
+	private static final String EMPTY_STRING = "";
 
 	@Autowired
 	private UtahLcboMatcherProcessorProperties properties;
@@ -71,8 +74,8 @@ public class UtahLcboMatcherProcessorConfiguration {
 		// Drop the last two chars in the name as it's usually the volume unit (ml)
 		String[] utahWords = utahName.substring(0, utahName.length() - 2)
 				.toUpperCase()
-				.replaceAll("[^a-zA-Z0-9 ]", "")
-				.split("\\s+");
+				.replaceAll(NON_ALPHA_MATCH, EMPTY_STRING)
+				.split(WHITESPACE_MATCH);
 		
 		// Create a set of words making up the Utah name to comparison for similarity to the LCBO name
 		Set<String> utahWordSet = new LinkedHashSet<String>();
@@ -87,8 +90,8 @@ public class UtahLcboMatcherProcessorConfiguration {
 		for(Object lcboNameObj : lcboNames) {
 			String lcboName = (String)lcboNameObj;
 			String[] lcboWords = lcboName.toUpperCase()
-					.replaceAll("[^a-zA-Z0-9 ]", "")
-					.split("\\s+");
+					.replaceAll(NON_ALPHA_MATCH, EMPTY_STRING)
+					.split(WHITESPACE_MATCH);
 			// Ensure at least the first and last words are identical (name and volume)
 			if(!lcboWords[0].equals(utahWords[0]) || !lcboWords[lcboWords.length - 1].equals(utahWords[utahWords.length - 1]))
 				continue;
@@ -118,6 +121,10 @@ public class UtahLcboMatcherProcessorConfiguration {
 				LOG.info("Matched Utah: " + p.getName() + "[$" + p.getPrice() + "] to LCBO: " 
 						+ bestMatchWhiskey + "[$" + lcboPrice + "]");
 			}
+		} else {
+			String err = "No matching LCBO whiskey with name: " + p.getName();
+			LOG.error(err);
+			throw new RuntimeException(err);
 		}
 		
 		return p;
