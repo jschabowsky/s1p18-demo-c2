@@ -120,6 +120,11 @@ public class UtahLcboMatcherProcessorConfiguration {
 				
 				LOG.info("Matched Utah: " + p.getName() + "[$" + p.getPrice() + "] to LCBO: " 
 						+ bestMatchWhiskey + "[$" + lcboPrice + "]");
+			} else {
+				String err = "Price delta beyond threshold $" + properties.getMaxAllowablePriceDelta() + 
+						" for match: " + p.getName() + " / " + bestMatchWhiskey;
+				LOG.error(err);
+				throw new RuntimeException(err);
 			}
 		} else {
 			String err = "No matching LCBO whiskey with name: " + p.getName();

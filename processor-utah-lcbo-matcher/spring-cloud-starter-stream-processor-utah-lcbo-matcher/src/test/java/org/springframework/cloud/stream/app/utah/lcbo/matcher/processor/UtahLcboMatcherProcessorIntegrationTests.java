@@ -53,22 +53,31 @@ public abstract class UtahLcboMatcherProcessorIntegrationTests {
 	 * Validates that the module loads with default properties.
 	 */
 	public static class UsingNothingIntegrationTests extends UtahLcboMatcherProcessorIntegrationTests {
-		private static final String TEST_RESULT = "{\"name\":\"JACK DANIELS TENNESSEE HONEY 750ml\",\"div_code\":null,\"dept_code\":null,\"class_code\":null,\"size\":750,\"csc\":0,\"price\":21.99,\"lcboPrice\":28";
+		private static final String TEST_RESULT = "{\"name\":\"JACK DANIELS TENNESSEE WHISKEY 750ml\",\"div_code\":null,\"dept_code\":null,\"class_code\":null,\"size\":750,\"csc\":0,\"price\":33.9,\"lcboPrice\":28.061493782803282,\"status";
 		
 		public static void doGenericProcessorTest(Processor channels, MessageCollector collector, Product p, String expectedResult) {
 			channels.input().send(new GenericMessage<Product>(p));
 			assertThat(collector.forChannel(channels.output()), receivesPayloadThat(containsString(expectedResult)));
 		}
-
 		
 		@Test
 		public void testMatch() {
 			Product p = new Product();
-			p.setName("JACK DANIELS TENNESSEE HONEY 750ml");
+			p.setName("JACK DANIELS TENNESSEE WHISKEY 750ml");
 			p.setSize(750);
-			p.setPrice(21.99);
+			p.setPrice(33.9);
 
 			doGenericProcessorTest(channels, collector, p, TEST_RESULT);
+		}
+		
+		@Test(expected = RuntimeException.class)
+		public void testPriceThresholdBreach() {
+			Product p = new Product();
+			p.setName("JAMESON GOLD IRISH WHISKEY 750ml");
+			p.setSize(750);
+			p.setPrice(84.9);
+
+			channels.input().send(new GenericMessage<Product>(p));
 		}
 		
 		@Test(expected = RuntimeException.class)
@@ -85,14 +94,14 @@ public abstract class UtahLcboMatcherProcessorIntegrationTests {
 
 	@SpringBootTest("utah.lcbo.matcher.minTokenMatchPercentage=75")
 	public static class UsingPropsIntegrationTests extends UtahLcboMatcherProcessorIntegrationTests {
-		private static final String TEST_RESULT = "{\"name\":\"JACK DANIELS TENNESSEE HONEY 750ml\",\"div_code\":null,\"dept_code\":null,\"class_code\":null,\"size\":750,\"csc\":0,\"price\":21";
+		private static final String TEST_RESULT = "{\"name\":\"JACK DANIELS TENNESSEE WHISKEY 750ml\",\"div_code\":null,\"dept_code\":null,\"class_code\":null,\"size\":750,\"csc\":0,\"price\":33.9,\"lcboPrice\":28.061493782803282,\"status";
 		
 		@Test
 		public void test() {
 			Product p = new Product();
-			p.setName("JACK DANIELS TENNESSEE HONEY 750ml");
+			p.setName("JACK DANIELS TENNESSEE WHISKEY 750ml");
 			p.setSize(750);
-			p.setPrice(21.99);
+			p.setPrice(33.9);
 			
 			UsingNothingIntegrationTests.doGenericProcessorTest(channels, collector, p, TEST_RESULT);
 		}
