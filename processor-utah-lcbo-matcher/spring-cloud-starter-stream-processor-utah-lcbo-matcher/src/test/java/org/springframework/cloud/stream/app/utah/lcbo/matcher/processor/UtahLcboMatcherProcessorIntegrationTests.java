@@ -13,25 +13,19 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.cloud.stream.annotation.Output;
 
 import org.springframework.cloud.stream.messaging.Processor;
 import org.springframework.cloud.stream.test.binder.MessageCollector;
-import org.springframework.messaging.Message;
+
 import org.springframework.messaging.support.GenericMessage;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import com.solace.demo.utahdabc.datamodel.Product;
 
-import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 import static org.hamcrest.CoreMatchers.containsString;
-import static org.hamcrest.CoreMatchers.startsWith;
 import static org.junit.Assert.assertThat;
-import static org.junit.Assert.assertTrue;
 import static org.springframework.cloud.stream.test.matcher.MessageQueueMatcher.receivesPayloadThat;
-
-import java.util.concurrent.TimeUnit;
 
 /**
  * Integration Tests for the lookup Processor.
