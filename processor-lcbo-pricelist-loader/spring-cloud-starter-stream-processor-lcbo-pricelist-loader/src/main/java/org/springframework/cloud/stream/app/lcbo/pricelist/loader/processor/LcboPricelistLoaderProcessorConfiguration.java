@@ -34,7 +34,7 @@ import org.springframework.web.util.UriComponents;
 import org.springframework.web.util.UriComponentsBuilder;
 
 /**
- * SCS processor - pricelist loader - loads HTML price data from a URL.
+ * See README.adoc
  *
  * @author Solace Corp
  */

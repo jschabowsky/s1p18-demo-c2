@@ -1,29 +1,37 @@
 //tag::ref-doc[]
 = processor-fx-rate-lookup
 
+The `fx-rate-lookup` processor takes product data and performs an exchange rate lookup for the price.  By default, it assumes an LCBO input product with a CAD price, and the equivalent USD price will be set using a cached exchange rate that gets refreshed daily.
 
 == Input
 
 === Headers
 
-N/A
+* N/A
 
 === Payload
 
-* Any
+* `com.solace.demo.utahdabc.datamodel.Product` with LCBO data and an LCBO price in $CAD
 
 == Output
 
 === Headers
 
-N/A
+* N/A
 
 === Payload
 
-* Any
+* `com.solace.demo.utahdabc.datamodel.Product` populated with a USD price of the LCBO product
 
 == Options
 
+The **$$fx-rate-lookup$$** $$processor$$ has the following options:
+
+//tag::configuration-properties[]
+$$fx.rate.lookup.cache-ttl-sec$$:: $$Expiration time for cached currency values$$ *($$Long$$, default: `$$86400$$`)*
+$$fx.rate.lookup.fx-lookup-url$$:: $$FX Rates Conversion Service URL - must include valid API key$$ *($$String$$, default: `$$<none>$$`)*
+$$fx.rate.lookup.target-lookup-currency$$:: $$Currency from which the conversion will occur$$ *($$String$$, default: `$$CAD$$`)*
+//end::configuration-properties[]
 
 == Build
 
@@ -40,7 +48,7 @@ $ ./mvnw clean package
 == Examples
 
 ```
-
+java -jar fx-rate-lookup-processor-solace-0.0.1.BUILD-SNAPSHOT.jar --solace.java.host=192.168.65.3 --solace.java.msgVpn=default --solace.java.clientUsername=default --solace.java.clientPassword=default --spring.cloud.stream.bindings.input.destination=fx.rate.lcbo --spring.cloud.stream.bindings.input.group=group --spring.cloud.stream.solace.bindings.input.consumer.queueAdditionalSubscriptions=lcbo/data/mapper --spring.cloud.stream.bindings.output.destination=fx/rate/lcbo --fx.rate.lookup.fxLookupUrl=https://openexchangerates.org/api/latest.json?app_id=<API_KEY_HERE> --solace.java.apiProperties.generate_sender_id=true --solace.java.apiProperties.generate_sequence_numbers=true --solace.java.apiProperties.generate_send_timestamps=true
 ```
 
 //end::ref-doc[]

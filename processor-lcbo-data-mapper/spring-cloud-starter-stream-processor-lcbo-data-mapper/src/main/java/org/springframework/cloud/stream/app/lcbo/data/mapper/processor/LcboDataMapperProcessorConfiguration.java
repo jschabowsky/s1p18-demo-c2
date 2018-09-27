@@ -21,7 +21,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 /**
- * SCS processor - pricelist parser - splits an HTML pricelist into individual products and outputs as JSON or a user-defined content type.
+ * See README.adoc
  *
  * @author Solace Corp
  */

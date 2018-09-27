@@ -1,29 +1,36 @@
 //tag::ref-doc[]
 = processor-utah-lcbo-matcher
 
+The `utah-lcbo-matcher` processor examines a stream of Utah product information and tries to find a suitable matching LCBO product based on volume, name and price difference.  If a match can't be found, it will throw an exception and cause the unmatched product (from the input stream) to go to the configured DLQ / DMQ.  
 
 == Input
 
 === Headers
 
-N/A
+* N/A
 
 === Payload
 
-* Any
+* `com.solace.demo.utahdabc.datamodel.Product` of Utah DABC products
 
 == Output
 
 === Headers
 
-N/A
+* N/A
 
 === Payload
 
-* Any
+* `com.solace.demo.utahdabc.datamodel.Product` with LCBO price (in USD) populated, along with the name of the matching LCBO product set in the SPA field.
 
 == Options
 
+The **$$utah-lcbo-matcher$$** $$processor$$ has the following options:
+
+//tag::configuration-properties[]
+$$utah.lcbo.matcher.max-allowable-price-delta$$:: $$After a % word match passes, the max price delta threshold under which matches are kept (higher deltas are discarded)$$ *($$Double$$, default: `$$50$$`)*
+$$utah.lcbo.matcher.min-token-match-percentage$$:: $$Minimum % of word matches to be considered an overall match between Utah and LCBO whiskey names$$ *($$Integer$$, default: `$$50$$`)*
+//end::configuration-properties[]
 
 == Build
 
@@ -40,7 +47,7 @@ $ ./mvnw clean package
 == Examples
 
 ```
-
+java -jar utah-lcbo-matcher-processor-solace-0.0.1.BUILD-SNAPSHOT.jar --solace.java.host=192.168.65.3 --solace.java.msgVpn=default --solace.java.clientUsername=default --solace.java.clientPassword=default --solace.java.apiProperties.generate_sender_id=true --solace.java.apiProperties.generate_sequence_numbers=true --solace.java.apiProperties.generate_send_timestamps=true --spring.cloud.stream.bindings.input.group=group --spring.cloud.stream.bindings.input.destination=utah.lcbo.matcher --spring.cloud.stream.bindings.output.destination=utah/lcbo/matcher --spring.cloud.stream.solace.bindings.input.consumer.queueAdditionalSubscriptions=product/A/W/* --spring.cloud.stream.solace.bindings.input.consumer.queueMaxMsgRedelivery=1 --spring.cloud.stream.solace.bindings.input.consumer.autoBindDmq=true --spring.cloud.stream.solace.bindings.input.consumer.dmqDiscardBehaviour=2 --spring.cloud.stream.solace.bindings.input.consumer.republishedMsgTtl=1000
 ```
 
 //end::ref-doc[]

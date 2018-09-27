@@ -29,7 +29,7 @@ import org.springframework.messaging.handler.annotation.SendTo;
 import com.solace.demo.utahdabc.datamodel.Product;
 
 /**
- * SCS processor - lookup.  Converts an address to lat/long, or the reverse.
+ * See README.adoc
  *
  * @author Solace Corp
  */

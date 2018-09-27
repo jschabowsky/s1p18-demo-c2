@@ -1,29 +1,37 @@
 //tag::ref-doc[]
 = processor-lcbo-data-mapper
 
+The `lcbo-data-mapper` processor maps LCBO products to the Utah data model to allow for easier processing in downstream apps and visualizations.
 
 == Input
 
 === Headers
 
-N/A
+* N/A
 
 === Payload
 
-* Any
+* `org.springframework.cloud.stream.app.lcbo.pricelist.loader.domain.LcboProduct`
 
 == Output
 
 === Headers
 
-N/A
+* N/A
 
 === Payload
 
-* Any
+* `com.solace.demo.utahdabc.datamodel.Product` populated with LCBO information on a best-match basis.  Mapped fields include: name, size (volume), price (CAD), tags, CSC (LCBO ID), and class code (LCBO categories - if configured).
 
 == Options
 
+The **$$lcbo-data-mapper$$** $$processor$$ has the following options:
+
+//tag::configuration-properties[]
+$$lcbo.data.mapper.category-delimiter$$:: $$Delimiter to use between primary, secondary and tertiary categories$$ *($$String$$, default: `$$:$$`)*
+$$lcbo.data.mapper.category-info-published$$:: $$Flag to indicate whether LCBO category info (e.g. Spirits/Whiskey) is published$$ *($$Boolean$$, default: `$$false$$`)*
+$$lcbo.pricelist.loader.processor-url$$:: $$LCBO REST API URL with query string parameters (by default, searching for whiskies)$$ *($$String$$, default: `$$http://lcboapi.com/products?where_not=is_dead,is_discontinued&q=whisky$$`)*
+//end::configuration-properties[]
 
 == Build
 
@@ -40,7 +48,7 @@ $ ./mvnw clean package
 == Examples
 
 ```
-
+java -jar lcbo-data-mapper-processor-solace-0.0.1.BUILD-SNAPSHOT.jar --solace.java.host=192.168.65.3 --solace.java.msgVpn=default --solace.java.clientUsername=default --solace.java.clientPassword=default --spring.cloud.stream.bindings.input.destination=lcbo.data.mapper --spring.cloud.stream.bindings.input.group=group --spring.cloud.stream.solace.bindings.input.consumer.queueAdditionalSubscriptions=lcbo/pricelist/loader --spring.cloud.stream.bindings.output.destination=lcbo/data/mapper --solace.java.apiProperties.generate_sender_id=true --solace.java.apiProperties.generate_sequence_numbers=true --solace.java.apiProperties.generate_send_timestamps=true
 ```
 
 //end::ref-doc[]
