@@ -66,8 +66,8 @@ public class LcboPricelistLoaderProcessorConfiguration {
 
 	    @Autowired
 	    private Processor processor;
-
-		@ServiceActivator(inputChannel = Processor.INPUT, outputChannel = Processor.OUTPUT)	    
+	    
+	    @ServiceActivator(inputChannel = Processor.INPUT)
 		public void process(Message<?> message) {
 			try {
 				String url = properties.getProcessorUrl();
